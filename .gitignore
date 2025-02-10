@@ -3,3 +3,6 @@ siameseModel.h5
 siameseModel.tflite
 flowers102
 weights
+products_10k
+products_10k_classes.csv
+signatures
