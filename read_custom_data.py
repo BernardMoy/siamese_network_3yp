@@ -1,4 +1,5 @@
 import os 
+import random
 
 def read_custom_data():
     TRAIN_PATH = "train"
