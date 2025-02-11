@@ -6,7 +6,9 @@ from itertools import combinations
 
 def generate_pairs(paths, labels, class_size):
     # create file list 
-    TRAIN_PATH = "products_10k"
+    TRAIN_PATH = "/dcs/22/u2256784/Downloads/train_filtered/data"
+
+    num_positve, num_negative = 0, 0
 
     # labels and paths should have corresponding indices
     # labels represent the class number
@@ -24,22 +26,29 @@ def generate_pairs(paths, labels, class_size):
 
     # iterate the key and value of the dict
     for key, value in class_dict.items():
-        # add the positive pair
         if len(value) > 1:
+            num_positive_added = len(list(combinations(value, 2)))
+
+            # add the positive pair
             # append every distinct combination
             pairs_output.extend([(os.path.join(TRAIN_PATH, a),os.path.join(TRAIN_PATH, b)) for a,b in combinations(value, 2)])
-            labels_output.extend([1] * len(list(combinations(value, 2))))
+            labels_output.extend([1] * num_positive_added)
+            num_positve += num_positive_added
 
 
-        # add the negative pairs
-        for img in value:
-            # find another distinct class
-            another_class = (key + random.randrange(1, class_size)) % class_size
+            # add the negative pairs
+            for img in value:
+                # the average number of negative pairs we need per data equal to (n-1)/2, for a class that has n data in it
+                # = nC2/n
+                for _ in range(len(value)//2):
+                    # find another distinct class
+                    another_class = ((key + 100*random.randrange(1, class_size)) % class_size)//100*100
 
-            # within that class, choose a random index
-            second_image = random.sample(class_dict[another_class], 1)[0]
-            pairs_output.append((os.path.join(TRAIN_PATH, img), os.path.join(TRAIN_PATH, second_image)))
-            labels_output.append(0)
+                    # within that class, choose a random index
+                    second_image = random.sample(class_dict[another_class], 1)[0]
+                    pairs_output.append((os.path.join(TRAIN_PATH, img), os.path.join(TRAIN_PATH, second_image)))
+                    labels_output.append(0)
+                    num_negative += 1
 
     # shuffle the pairs
     combined = list(zip(pairs_output, labels_output))
@@ -47,6 +56,11 @@ def generate_pairs(paths, labels, class_size):
     pairs_output, labels_output = zip(*combined)
     pairs_output = list(pairs_output)
     labels_output = list(labels_output)
+
+    # output the number of pairs
+    print(f"Number of pairs: {len(pairs_output)}")
+    print(f"Number of positives: {num_positve}")
+    print(f"Number of negatives: {num_negative}")
 
     # split into train and val
     train_size = int(0.7 * len(pairs_output))
@@ -64,7 +78,7 @@ LAST_ROW = 1855
 def read_data(first_row = 1, last_row = LAST_ROW):
 
     # read the first 538 rows of the csv file 
-    df = pd.read_csv("products_10k_classes.csv", header = None, skiprows = 1)
+    df = pd.read_csv("/dcs/22/u2256784/Downloads/train_filtered/labels_filtered.csv", header = None, skiprows = 1)
     df_sliced = df.iloc[1:LAST_ROW]
 
     # the number of classes is equal to the last class + 1
