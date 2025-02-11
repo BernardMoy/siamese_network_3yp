@@ -6,9 +6,9 @@ from itertools import combinations
 
 def generate_pairs(paths, labels, class_size):
     # create file list 
-    TRAIN_PATH = "/dcs/22/u2256784/Downloads/train_filtered/data"
+    TRAIN_PATH = "products_10k_train_100/data"
 
-    num_positve, num_negative = 0, 0
+    num_positve, num_negative = 0,0
 
     # labels and paths should have corresponding indices
     # labels represent the class number
@@ -42,7 +42,7 @@ def generate_pairs(paths, labels, class_size):
                 # = nC2/n
                 for _ in range(len(value)//2):
                     # find another distinct class
-                    another_class = ((key + 100*random.randrange(1, class_size)) % class_size)//100*100
+                    another_class = ((key + random.randrange(1, class_size)) % class_size)
 
                     # within that class, choose a random index
                     second_image = random.sample(class_dict[another_class], 1)[0]
@@ -78,7 +78,7 @@ LAST_ROW = 1855
 def read_data(first_row = 1, last_row = LAST_ROW):
 
     # read the first 538 rows of the csv file 
-    df = pd.read_csv("/dcs/22/u2256784/Downloads/train_filtered/labels_filtered.csv", header = None, skiprows = 1)
+    df = pd.read_csv("products_10k_train_100/labels_filtered.csv", header = None, skiprows = 1)
     df_sliced = df.iloc[first_row: last_row]
 
     # the number of classes is equal to the last class + 1
