@@ -1,36 +1,87 @@
 import pandas as pd 
 import os 
 import numpy as np
+import random
+from itertools import combinations
+
+def generate_pairs(paths, labels, class_size):
+    # create file list 
+    TRAIN_PATH = "products_10k"
+
+    # labels and paths should have corresponding indices
+    # labels represent the class number
+    # construct dict 
+    class_dict = {}
+    for image_path, label in zip(paths, labels):
+        # append the image path in the dict
+        if label not in class_dict:
+            class_dict[label] = []
+        class_dict[label].append(image_path)
+
+
+    pairs_output = []
+    labels_output = [] 
+
+    # iterate the key and value of the dict
+    for key, value in class_dict.items():
+        # add the positive pair
+        if len(value) > 1:
+            # append every distinct combination
+            pairs_output.extend([(os.path.join(TRAIN_PATH, a),os.path.join(TRAIN_PATH, b)) for a,b in combinations(value, 2)])
+            labels_output.extend([1] * len(list(combinations(value, 2))))
+
+
+        # add the negative pairs
+        for img in value:
+            # find another distinct class
+            another_class = (key + random.randrange(1, class_size)) % class_size
+
+            # within that class, choose a random index
+            second_image = random.sample(class_dict[another_class], 1)[0]
+            pairs_output.append((os.path.join(TRAIN_PATH, img), os.path.join(TRAIN_PATH, second_image)))
+            labels_output.append(0)
+
+    # shuffle the pairs
+    combined = list(zip(pairs_output, labels_output))
+    random.shuffle(combined)
+    pairs_output, labels_output = zip(*combined)
+    pairs_output = list(pairs_output)
+    labels_output = list(labels_output)
+
+    # split into train and val
+    train_size = int(0.7 * len(pairs_output))
+
+    pairs_train = pairs_output[:train_size]
+    labels_train = labels_output[:train_size]
+    pairs_val = pairs_output[train_size:]
+    labels_val = labels_output[train_size:]
+
+    return np.array(pairs_train), np.array(labels_train), np.array(pairs_val), np.array(labels_val)
+
+
+
 
 def read_data():
     # read the first 538 rows of the csv file 
     df = pd.read_csv("products_10k_classes.csv", header = None, skiprows = 1)
-    df_sliced = df.iloc[:538]
+    df_sliced = df.iloc[1:539]
 
     # the number of classes is equal to the last class + 1
     num_classes = int(df_sliced.iloc[-1, 1])+1
-    classes = [i for i in range(num_classes)]
-    print(num_classes)
 
-    # create file list 
-    TRAIN_PATH = "products_10k"
-
-    # shuffle the rows 
-    df_shuffled = df_sliced.sample(frac=1)
-
-    # create the labels and files name, according to each row in the shuffled dataset
+    # create the labels and files name, according to each row in the dataset
     labels = []
     files = []
-    print(df_shuffled)
-    for index, row in df_shuffled.iterrows():
-        file_name = os.path.join(TRAIN_PATH, str(row[0]))
-        print(row[1])
+    for index, row in df_sliced.iterrows():
+        file_name = row[0]
         class_name = int(row[1])
         files.append(file_name)
         labels.append(class_name)
 
-    return np.array(labels), np.array(files), np.array(classes)
+    # generate pairs
+    return generate_pairs(files, labels, num_classes)
 
-labels, files, classes = read_data()
-print(labels)
-print(files)
+
+a,b,c,d = read_data()
+print(a)
+print(b)
