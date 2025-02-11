@@ -64,7 +64,7 @@ def generate_pairs(paths, labels, class_size):
 def read_data():
     # read the first 538 rows of the csv file 
     df = pd.read_csv("products_10k_classes.csv", header = None, skiprows = 1)
-    df_sliced = df.iloc[1:539]
+    df_sliced = df.iloc[1:2124]
 
     # the number of classes is equal to the last class + 1
     num_classes = int(df_sliced.iloc[-1, 1])+1

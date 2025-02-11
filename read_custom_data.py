@@ -2,25 +2,31 @@ import os
 import random
 
 def read_custom_data():
-    TRAIN_PATH = "train"
+    TEST_PATH = "test"
 
-    positive_pairs_train = []
-    negative_pairs_train = []
+    pairs = []
 
     # Anchor images are in train/directory/anchor for each directory
-    for category in os.listdir(TRAIN_PATH):
-        anchor_dir = os.path.join(TRAIN_PATH, category, "anchor")
-        positive_dir = os.path.join(TRAIN_PATH, category, "positive")
-        negative_dir = os.path.join(TRAIN_PATH, category, "negative")
+    test_path_positive = os.path.join(TEST_PATH, "positive")
+    test_path_negative_easy = os.path.join(TEST_PATH, "negative_easy")
+    test_path_negative_hard = os.path.join(TEST_PATH, "negative_hard")
 
-        anchor_list = [os.path.join(anchor_dir, f) for f in os.listdir(anchor_dir)]
-        positive_list = [os.path.join(positive_dir, f) for f in os.listdir(positive_dir)]
-        negative_list = [os.path.join(negative_dir, f) for f in os.listdir(negative_dir)]
+    for category in os.listdir(test_path_positive):
+        dirs = os.listdir(os.path.join(test_path_positive, category))
+        first_dir = os.path.join(test_path_positive, category, dirs[0])
+        second_dir = os.path.join(test_path_positive, category, dirs[1])
+        pairs.append((first_dir, second_dir, 1))
 
-        # Within each category directory, match each anchor with each positive and negative 
-        positive_pairs_train += [(a, p, 1) for a in anchor_list for p in positive_list]
-        negative_pairs_train += [(a, n, 0) for a in anchor_list for n in negative_list]
+    for category in os.listdir(test_path_negative_easy):
+        dirs = os.listdir(os.path.join(test_path_negative_easy, category))
+        first_dir = os.path.join(test_path_negative_easy, category, dirs[0])
+        second_dir = os.path.join(test_path_negative_easy, category, dirs[1])
+        pairs.append((first_dir, second_dir, 0))
 
-    data_raw_train = positive_pairs_train + negative_pairs_train 
+    for category in os.listdir(test_path_negative_hard):
+        dirs = os.listdir(os.path.join(test_path_negative_hard, category))
+        first_dir = os.path.join(test_path_negative_hard, category, dirs[0])
+        second_dir = os.path.join(test_path_negative_hard, category, dirs[1])
+        pairs.append((first_dir, second_dir, 0))
 
-    return data_raw_train
+    return pairs
