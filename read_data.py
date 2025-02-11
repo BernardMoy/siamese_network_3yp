@@ -4,9 +4,12 @@ import numpy as np
 import random
 from itertools import combinations
 
+
+TRAIN_DIR = "products_10k_train_100"
+
 def generate_pairs(paths, labels, class_size):
     # create file list 
-    TRAIN_PATH = "products_10k_train_100/data"
+    TRAIN_PATH = os.path.join(TRAIN_DIR, "data")
 
     num_positve, num_negative = 0,0
 
@@ -78,7 +81,7 @@ LAST_ROW = 1855
 def read_data(first_row = 1, last_row = LAST_ROW):
 
     # read the first 538 rows of the csv file 
-    df = pd.read_csv("products_10k_train_100/labels_filtered.csv", header = None, skiprows = 1)
+    df = pd.read_csv(os.path.join(TRAIN_DIR, "labels_filtered.csv"), header = None, skiprows = 1)
     df_sliced = df.iloc[first_row: last_row]
 
     # the number of classes is equal to the last class + 1
