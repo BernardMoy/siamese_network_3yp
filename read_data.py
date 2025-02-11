@@ -79,7 +79,7 @@ def read_data(first_row = 1, last_row = LAST_ROW):
 
     # read the first 538 rows of the csv file 
     df = pd.read_csv("/dcs/22/u2256784/Downloads/train_filtered/labels_filtered.csv", header = None, skiprows = 1)
-    df_sliced = df.iloc[1:LAST_ROW]
+    df_sliced = df.iloc[first_row: last_row]
 
     # the number of classes is equal to the last class + 1
     num_classes = int(df_sliced.iloc[-1, 1])+1
