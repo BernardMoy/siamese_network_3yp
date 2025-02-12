@@ -6,6 +6,7 @@ from itertools import combinations
 
 
 TRAIN_DIR = "products_10k_train_100"
+NEGATIVE_MULTIPLIER = 2     # the positive to negative ratio, 2 means the pos to neg ratio is 1:2
 
 def generate_pairs(paths, labels, class_size):
     # create file list 
@@ -43,7 +44,7 @@ def generate_pairs(paths, labels, class_size):
             for img in value:
                 # the average number of negative pairs we need per data equal to (n-1)/2, for a class that has n data in it
                 # = nC2/n
-                for _ in range(len(value)):
+                for _ in range(len(value)//2*NEGATIVE_MULTIPLIER):
                     # find another distinct class
                     another_class = ((key + random.randrange(1, class_size)) % class_size)
 
