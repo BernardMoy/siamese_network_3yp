@@ -43,7 +43,7 @@ def generate_pairs(paths, labels, class_size):
             for img in value:
                 # the average number of negative pairs we need per data equal to (n-1)/2, for a class that has n data in it
                 # = nC2/n
-                for _ in range(len(value)//2):
+                for _ in range(len(value)):
                     # find another distinct class
                     another_class = ((key + random.randrange(1, class_size)) % class_size)
 
