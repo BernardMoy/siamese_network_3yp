@@ -5,7 +5,7 @@ import random
 from itertools import combinations
 
 
-TRAIN_DIR = "products_10k_train_100"
+TRAIN_DIR = "products_10k_train_50"
 NEGATIVE_MULTIPLIER = 2     # the positive to negative ratio, 2 means the pos to neg ratio is 1:2
 
 def generate_pairs(paths, labels, class_size):
