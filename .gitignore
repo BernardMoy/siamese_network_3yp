@@ -10,3 +10,4 @@ products_10k_train_100
 products_10k_train_197
 good_models
 best_fit.h5
+final_model.h5
